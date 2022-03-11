@@ -68,18 +68,27 @@ Label(top,text="score",bg=Labelcolor,font=("consolas",10,"normal")).place(y=curh
 Label(top,text="type",bg=Labelcolor,font=("consolas",10,"normal")).place(y=curheight,x=L+D+M+D2+M,height=H,width=D3*3)
 
 curheight+=H+M
+initial_height=curheight
 defaultscore="0"
 defaulttype=0 # min,sum,mul 
-
+maxcurheight=0
+curx=0
+cnt=0
 for i in os.listdir():
 	if os.path.isfile(i): continue
+	if cnt==10:
+		maxcurheight=curheight
+		cnt=0
+		curx+=L+D+M+D2+M+D3*3+L+M
+		curheight=initial_height
+	cnt+=1
 	lbl=Label(top,text=i,bg=Labelcolor,font=("consolas",10,"normal"))
-	lbl.place(y=curheight,x=L,height=H,width=D)
+	lbl.place(y=curheight,x=curx+L,height=H,width=D)
 	inp1=Entry(top)
 	inp1.insert(0,defaultscore)
-	inp1.place(y=curheight,x=L+D+M,height=H,width=D2)
+	inp1.place(y=curheight,x=curx+L+D+M,height=H,width=D2)
 	inp2=Frame(top,bg=Labelcolor)
-	inp2.place(y=curheight,x=L+D+M+D2+M,height=H,width=D3*3)
+	inp2.place(y=curheight,x=curx+L+D+M+D2+M,height=H,width=D3*3)
 	ch=IntVar()
 	ch.set(0)
 	Radiobutton(inp2, variable=ch, text="min", value=0,bg=Labelcolor,font=("consolas",10,"normal")).place(y=0,x=0)
@@ -89,26 +98,29 @@ for i in os.listdir():
 	lis.append([i,inp1,ch])
 	#GetFormat(i)
 
+curx+=L+D+M+D2+M+D3*3+L
 
-curheight+=M*2
+maxcurheight=max(maxcurheight,curheight)
+print(maxcurheight)
+maxcurheight+=M*2
 
-Label(top,text="input file",bg=Labelcolor,font=("consolas",10,"normal")).place(y=curheight,x=L,height=H,width=D)
-Label(top,text="output file",bg=Labelcolor,font=("consolas",10,"normal")).place(y=curheight,x=L+D+M,height=H,width=D)
-curheight+=H+M
+Label(top,text="input file",bg=Labelcolor,font=("consolas",10,"normal")).place(y=maxcurheight,x=(curx-D*2-M)/2,height=H,width=D)
+Label(top,text="output file",bg=Labelcolor,font=("consolas",10,"normal")).place(y=maxcurheight,x=(curx-D*2-M)/2+D+M,height=H,width=D)
+maxcurheight+=H+M
 IN=Entry(top)
-IN.place(y=curheight,x=L,height=H,width=D)
+IN.place(y=maxcurheight,x=(curx-D*2-M)/2,height=H,width=D)
 IN.insert(0,"#."+inpformat)
 OUT=Entry(top)
-OUT.place(y=curheight,x=L+D+M,height=H,width=D)
+OUT.place(y=maxcurheight,x=(curx-D*2-M)/2+D+M,height=H,width=D)
 OUT.insert(0,"#."+oupformat)
-curheight+=H+M
+maxcurheight+=H+M
 spjbutton=IntVar()
 spjbutton.set(0)
 Checkbutton(top, variable=spjbutton,onvalue = 1, offvalue = 0, text="special judge   default:spj language: cpp17, \n option                 spj file:    spj.cpp ", 
-	bg=Labelcolor,font=("consolas",10,"normal"),height=4).place(y=curheight,x=L+D3)
+	bg=Labelcolor,font=("consolas",10,"normal"),height=4,width=50).place(y=maxcurheight,x=(curx-380)/2)
 #Label(top,text="",bg=Labelcolor,font=("consolas",10,"normal")).place(y=curheight,x=L+D2+D3+M,height=H*2,width=D)
 
-curheight+=H+M*4
+maxcurheight+=H+M*4
 IDSTART=1
 
 
@@ -145,11 +157,13 @@ def Run():
 
 
 btn=Button(text="Format!",command=Run,bg=Buttoncolor,font=("consolas",10,"normal"))
-btn.place(y=curheight,x=(L+D+M+D2+M+D3*3+L-D-D2)/2,height=H*2,width=D+D2)
-curheight+=H*2+M*2
+btn.place(y=maxcurheight,x=(curx-D-D2)/2,height=H*2,width=D+D2)
+maxcurheight+=H*2+M*2
 
 
-top.geometry('%dx%d' % (L+D+M+D2+M+D3*3+L,curheight))
+top.geometry('%dx%d' % (curx,maxcurheight))
+
+print(curx,maxcurheight)
 
 mainloop()
 
